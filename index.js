@@ -23,7 +23,7 @@ const run = async () => {
         client.connect();
         console.log("datebase connected successfully");
 
-        const database = client.db("gymo");
+        const database = client.db("on-the-go");
         const serviceCollection = database.collection("services");
 
         //service api
