@@ -20,7 +20,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 const run = async () => {
     try{
-        client.connect();
+        await client.connect();
         console.log("datebase connected successfully");
 
         const database = client.db("on-the-go");
