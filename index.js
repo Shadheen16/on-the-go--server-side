@@ -19,12 +19,13 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@mango.q
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const run = async () => {
-    try{
+    try {
         await client.connect();
         console.log("datebase connected successfully");
 
         const database = client.db("on-the-go");
         const serviceCollection = database.collection("services");
+        const orderCollection = database.collection("orders");
 
         //get all services api
 
@@ -34,14 +35,90 @@ const run = async () => {
             res.send(services);
         });
 
+        // GET Single Service
+        app.get('/services/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log('getting specific service', id);
+            const query = { _id: ObjectId(id) };
+            const service = await servicesCollection.findOne(query);
+            res.json(service);
+        })
+
         //post api
         app.post('/services', async (req, res) => {
             console.log('api hitted')
             const service = req.body;
-
             const result = await serviceCollection.insertOne(service);
             res.send(`A document was inserted with the _id: ${result.insertedId}`);
+        });
+
+        app.post('orders', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollectioin.insertOne(order);
+            res.send(`A document was inserted with the _id: ${result.insertedId}`);
         })
+
+        // update api
+        app.put('/services/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedUser = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    title: updateService.title,
+                    description: updateService.description,
+                    price: updateService.price,
+                    image_url: updateService.image_url
+                },
+            };
+            const result = await usersCollection.updateOne(filter, updateDoc, options)
+            console.log('updating', id)
+            res.json(result)
+        })
+
+        // DELETE SERVICE API
+        app.delete('/services/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await serviceCollection.deleteOne(query);
+            res.json(result);
+        });
+
+        // Use POST to get data by keys
+        app.post('/services/byKeys', async (req, res) => {
+            const keys = req.body;
+            const query = { key: { $in: keys } }
+            const products = await serviceCollection.find(query).toArray();
+            res.send(products);
+        });
+
+        // Add Orders API
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await orderCollection.insertOne(order);
+            res.json(result);
+        });
+
+        
+        //get all orders api
+
+        app.get('/orders', async (req, res) => {
+            const cursor = orderCollection.find({});
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
+
+        // DELETE ORDER API
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await orderCollection.deleteOne(query);
+            res.json(result);
+        });
+
+
+
     }
     finally {
         // client.close();
@@ -51,7 +128,7 @@ const run = async () => {
 run().catch(console.dir);
 
 
-app.get('/',(req, res) => {
+app.get('/', (req, res) => {
     res.send('node server is running');
 });
 
