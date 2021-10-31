@@ -26,12 +26,21 @@ const run = async () => {
         const database = client.db("on-the-go");
         const serviceCollection = database.collection("services");
 
-        //service api
+        //get all services api
 
         app.get('/services', async (req, res) => {
             const cursor = serviceCollection.find({});
             const services = await cursor.toArray();
             res.send(services);
+        });
+
+        //post api
+        app.post('/services', async (req, res) => {
+            console.log('api hitted')
+            const service = req.body;
+
+            const result = await serviceCollection.insertOne(service);
+            res.send(`A document was inserted with the _id: ${result.insertedId}`);
         })
     }
     finally {
@@ -50,17 +59,3 @@ app.listen(port, () => {
     console.log('server running at port', port);
 })
 
-// const { MongoClient } = require('mongodb');
-// require('dotenv').config()
-
-
-
-// const uri = "mongodb+srv://shadheen:t7YeEna#sD#jq-E@mango.qwtht.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-
-
-// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-// client.connect(err => {
-//   const collection = client.db("test").collection("devices");
-//   // perform actions on the collection object
-//   client.close();
-// });
