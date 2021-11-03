@@ -123,11 +123,12 @@ const run = async () => {
         app.put('/orders/:id', async (req, res) => {
             const id = req.params.id;
             const updatedOrderStatus = req.body;
+            console.log(updatedOrderStatus);
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
             const updateStatus = {
                 $set: {
-                    status: updatedOrderStatus.status,
+                    status: updatedOrderStatus.status
                 },
             };
             const result = await orderCollection.updateOne(filter, updateStatus, options)
