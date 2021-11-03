@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, MongoExpiredSessionError } = require('mongodb');
+
+const { MongoClient, MongoExpiredSessionError, ObjectId } = require('mongodb');
+
+
 require('dotenv').config();
 
 
@@ -40,7 +43,7 @@ const run = async () => {
             const id = req.params.id;
             console.log('getting specific service', id);
             const query = { _id: ObjectId(id) };
-            const service = await servicesCollection.findOne(query);
+            const service = await serviceCollection.findOne(query);
             res.json(service);
         })
 
@@ -52,33 +55,29 @@ const run = async () => {
             res.send(`A document was inserted with the _id: ${result.insertedId}`);
         });
 
-        app.post('orders', async (req, res) => {
-            const order = req.body;
-            const result = await orderCollectioin.insertOne(order);
-            res.send(`A document was inserted with the _id: ${result.insertedId}`);
-        })
 
         // update api
         app.put('/services/:id', async (req, res) => {
             const id = req.params.id;
-            const updatedUser = req.body;
+            const updatedService = req.body;
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
-            const updateDoc = {
+            const updateService = {
                 $set: {
-                    title: updateService.title,
-                    description: updateService.description,
-                    price: updateService.price,
-                    image_url: updateService.image_url
+                    title: updatedService.title,
+                    description: updatedService.description,
+                    price: updatedService.price,
+                    image_url: updatedService.image_url
                 },
             };
-            const result = await usersCollection.updateOne(filter, updateDoc, options)
+            const result = await serviceCollection.updateOne(filter, updateService, options)
             console.log('updating', id)
             res.json(result)
         })
 
         // DELETE SERVICE API
         app.delete('/services/:id', async (req, res) => {
+            console.log("delete api hitted")
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await serviceCollection.deleteOne(query);
@@ -95,7 +94,10 @@ const run = async () => {
 
         // Add Orders API
         app.post('/orders', async (req, res) => {
+            console.log('posting order')
             const order = req.body;
+            console.log(order);
+            order.status = 0;
             const result = await orderCollection.insertOne(order);
             res.json(result);
         });
@@ -117,6 +119,21 @@ const run = async () => {
             res.json(result);
         });
 
+        // update order status API
+        app.put('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedOrderStatus = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateStatus = {
+                $set: {
+                    status: updatedOrderStatus.status,
+                },
+            };
+            const result = await orderCollection.updateOne(filter, updateStatus, options)
+            console.log('updating', id)
+            res.json(result)
+        })
 
 
     }
