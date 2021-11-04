@@ -96,6 +96,7 @@ const run = async () => {
         });
 
 
+      
         //get all orders api
 
         app.get('/orders', async (req, res) => {
@@ -104,6 +105,16 @@ const run = async () => {
             res.send(orders);
         });
 
+          // get orders by email
+          app.post('/my-orders', async (req, res) => {
+            console.log("getting single user orders")
+            const userEmail = req.body.email;
+            const cursor = orderCollection.find({ email: userEmail });
+            const orders = await cursor.toArray();
+            res.send(orders);
+        })
+
+
         // Use POST to get  orders by keys
         app.post('/orders/byKeys', async (req, res) => {
             const keys = req.body;
@@ -111,14 +122,6 @@ const run = async () => {
             const orders = await orderCollection.find(query).toArray();
             res.send(orders);
         });
-
-        app.post('/my-orders', async (req, res) => {
-            console.log("hyfghfgh")
-            const userEmail = req.body.email;
-            const cursor = bookingCollection.find({ email: userEmail });
-            const bookings = await cursor.toArray();
-            res.send(bookings);
-        })
 
 
         // DELETE ORDER API
