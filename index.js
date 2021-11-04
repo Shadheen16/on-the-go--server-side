@@ -84,13 +84,6 @@ const run = async () => {
             res.json(result);
         });
 
-        // Use POST to get data by keys
-        app.post('/services/byKeys', async (req, res) => {
-            const keys = req.body;
-            const query = { key: { $in: keys } }
-            const products = await serviceCollection.find(query).toArray();
-            res.send(products);
-        });
 
         // Add Orders API
         app.post('/orders', async (req, res) => {
@@ -102,7 +95,7 @@ const run = async () => {
             res.json(result);
         });
 
-        
+
         //get all orders api
 
         app.get('/orders', async (req, res) => {
@@ -110,6 +103,15 @@ const run = async () => {
             const orders = await cursor.toArray();
             res.send(orders);
         });
+
+        // Use POST to get  orders by keys
+        app.post('/orders/byKeys', async (req, res) => {
+            const keys = req.body;
+            const query = { key: { $in: keys } }
+            const orders = await orderCollection.find(query).toArray();
+            res.send(orders);
+        });
+
 
         // DELETE ORDER API
         app.delete('/orders/:id', async (req, res) => {
