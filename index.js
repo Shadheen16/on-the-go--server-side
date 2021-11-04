@@ -112,6 +112,14 @@ const run = async () => {
             res.send(orders);
         });
 
+        app.post('/my-orders', async (req, res) => {
+            console.log("hyfghfgh")
+            const userEmail = req.body.email;
+            const cursor = bookingCollection.find({ email: userEmail });
+            const bookings = await cursor.toArray();
+            res.send(bookings);
+        })
+
 
         // DELETE ORDER API
         app.delete('/orders/:id', async (req, res) => {
