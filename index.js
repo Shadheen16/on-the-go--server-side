@@ -27,60 +27,60 @@ const run = async () => {
         console.log("datebase connected successfully");
 
         const database = client.db("on-the-go");
-        const serviceCollection = database.collection("services");
+        const productCollection = database.collection("products");
         const orderCollection = database.collection("orders");
 
-        //get all services api
+        //get all products api
 
-        app.get('/services', async (req, res) => {
-            const cursor = serviceCollection.find({});
-            const services = await cursor.toArray();
-            res.send(services);
+        app.get('/products', async (req, res) => {
+            const cursor = productCollection.find({});
+            const products = await cursor.toArray();
+            res.send(products);
         });
 
-        // GET Single Service
-        app.get('/services/:id', async (req, res) => {
+        // GET Single product
+        app.get('/products/:id', async (req, res) => {
             const id = req.params.id;
-            console.log('getting specific service', id);
+            console.log('getting specific product', id);
             const query = { _id: ObjectId(id) };
-            const service = await serviceCollection.findOne(query);
-            res.json(service);
+            const product = await productCollection.findOne(query);
+            res.json(product);
         })
 
         //post api
-        app.post('/services', async (req, res) => {
+        app.post('/products', async (req, res) => {
             console.log('api hitted')
-            const service = req.body;
-            const result = await serviceCollection.insertOne(service);
+            const product = req.body;
+            const result = await productCollection.insertOne(product);
             res.send(`A document was inserted with the _id: ${result.insertedId}`);
         });
 
 
         // update api
-        app.put('/services/:id', async (req, res) => {
+        app.put('/products/:id', async (req, res) => {
             const id = req.params.id;
-            const updatedService = req.body;
+            const updatedproduct = req.body;
             const filter = { _id: ObjectId(id) };
             const options = { upsert: true };
-            const updateService = {
+            const updateproduct = {
                 $set: {
-                    title: updatedService.title,
-                    description: updatedService.description,
-                    price: updatedService.price,
-                    image_url: updatedService.image_url
+                    title: updatedproduct.title,
+                    description: updatedproduct.description,
+                    price: updatedproduct.price,
+                    image_url: updatedproduct.image_url
                 },
             };
-            const result = await serviceCollection.updateOne(filter, updateService, options)
+            const result = await productCollection.updateOne(filter, updateproduct, options)
             console.log('updating', id)
             res.json(result)
         })
 
-        // DELETE SERVICE API
-        app.delete('/services/:id', async (req, res) => {
+        // DELETE product API
+        app.delete('/products/:id', async (req, res) => {
             console.log("delete api hitted")
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const result = await serviceCollection.deleteOne(query);
+            const result = await productCollection.deleteOne(query);
             res.json(result);
         });
 
